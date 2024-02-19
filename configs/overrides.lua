@@ -4,7 +4,12 @@ local M = {}
 M.treesitter = {
   -- https://github.com/nvim-treesitter/nvim-treesitter#supported-languages
   ensure_installed = {
+    "astro",
     "vim",
+    "vimdoc",
+    "v",
+
+    "nim",
     "lua",
     "html",
     "css",
@@ -16,6 +21,7 @@ M.treesitter = {
     "markdown_inline",
     "python",
     "latex",
+    "bibtex",
     "c_sharp"
   },
   indent = {
@@ -24,6 +30,12 @@ M.treesitter = {
     --   "python"
     -- },
   },
+  highlight = {
+    disable = {
+      "latex"
+    }
+  }
+
 }
 
 M.mason = {

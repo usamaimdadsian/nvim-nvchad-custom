@@ -160,9 +160,17 @@ local plugins = {
       vim.g.vimtex_quickfix_mode=0
       vim.g.conceallevel=1
       vim.g.tex_conceal='abdmg'
+      vim.g.vimtex_compiler_method='latexmk'
+      -- vim.g.vimtex_compiler_method='tectonic'
     end,
+  },
+  {
+  	"L3MON4D3/LuaSnip",
+    config = function()
+      require("luasnip.loaders.from_lua").lazy_load({paths="~/.config/nvim/lua/custom/configs/snippets"})
+    end
   }
-
+  -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
 }
 
 return plugins
