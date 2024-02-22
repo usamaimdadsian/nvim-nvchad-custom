@@ -67,12 +67,14 @@ local plugins = {
   { import = "nvcommunity.motion.hop" },
   { import = "nvcommunity.motion.bookmarks" },
   { import = "nvcommunity.motion.neoscroll" },
+  { import = "nvcommunity.motion.harpoon" },
   { import = "nvcommunity.editor.rainbowdelimiters" },
   -- { import = "nvcommunity.editor.biscuits" },
   { import = "nvcommunity.editor.hlargs" },
   { import = "nvcommunity.editor.illuminate" },
   { import = "nvcommunity.editor.treesittercontext" },
   { import = "nvcommunity.editor.treesj" },
+  -- { import = "nvcommunity.folds.fold-cycle" },
   { import = "nvcommunity.folds.origami" },
   { import = "nvcommunity.diagnostics.trouble" },
   -- { import = "nvcommunity.lsp.barbecue" },
@@ -169,6 +171,77 @@ local plugins = {
     config = function()
       require("luasnip.loaders.from_lua").lazy_load({paths="~/.config/nvim/lua/custom/configs/snippets"})
     end
+  },
+  {
+    "mfussenegger/nvim-dap-python",
+    -- stylua: ignore
+    keys = {
+      { "<leader>dPt", function() require('dap-python').test_method() end, desc = "Debug Method", ft = "python" },
+      { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
+    },
+    config = function()
+      local path = require("mason-registry").get_package("debugpy"):get_install_path()
+      require("dap-python").setup(path .. "/venv/bin/python")
+    end,
+  },
+  {
+    'linux-cultist/venv-selector.nvim',
+    dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
+    opts = {
+      -- Your options go here
+      -- name = "venv",
+      -- auto_refresh = false
+    },
+    event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
+    keys = {
+      -- Keymap to open VenvSelector to pick a venv.
+      { '<leader>pvs', '<cmd>VenvSelect<cr>' },
+      -- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
+      { '<leader>pvc', '<cmd>VenvSelectCached<cr>' },
+    },
+  },
+  -- {
+  --   "rcarriga/nvim-notify",
+  --   keys = {
+  --     {
+  --       "<leader>un",
+  --       function()
+  --         require("notify").dismiss({ silent = true, pending = true })
+  --       end,
+  --       desc = "Dismiss all Notifications",
+  --     },
+  --   },
+  --   opts = {
+  --     timeout = 3000,
+  --     max_height = function()
+  --       return math.floor(vim.o.lines * 0.75)
+  --     end,
+  --     max_width = function()
+  --       return math.floor(vim.o.columns * 0.75)
+  --     end,
+  --     on_open = function(win)
+  --       vim.api.nvim_win_set_config(win, { zindex = 100 })
+  --     end,
+  --   },
+  --   init = function()
+  --     -- when noice is not enabled, install notify on VeryLazy
+  --     if not Util.has("noice.nvim") then
+  --       Util.on_very_lazy(function()
+  --         vim.notify = require("notify")
+  --       end)
+  --     end
+  --   end,
+  -- },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = { options = vim.opt.sessionoptions:get() },
+    -- stylua: ignore
+    keys = {
+      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
+      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
+    },
   }
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
 }

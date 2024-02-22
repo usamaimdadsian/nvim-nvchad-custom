@@ -5,10 +5,10 @@ local M = {}
 M.dap_config =  function(_,_)
   require("core.utils").load_mappings("dap")
 
-  local dap = require("dap")
-
-  dap.adapters.python = require("custom.dap.adapters.debugpy").adapter
-  dap.configurations.python = require("custom.dap.adapters.debugpy").config
+  -- local dap = require("dap")
+  --
+  -- dap.adapters.python = require("custom.dap.adapters.debugpy").adapter
+  -- dap.configurations.python = require("custom.dap.adapters.debugpy").config
 end
 
 M.handlers = {
