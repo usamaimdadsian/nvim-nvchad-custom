@@ -22,14 +22,14 @@ return {
       \(<>\)
     ]], {i(1)}
   )),
-  s("fn_piecewise",fmta(
-    [[
-    |x| = \left\{ \begin{array}{cl}
-                x & : \ x \geq 0 \\
-                -x & : \ x < 0
-                \end{array} \right.
-    ]], {i(1)}
-  )),
+  -- s("fn_piecewise",fmta(
+  --   [[
+  --     |x| = \left\{ \begin{array}{cl}
+  --               <> & : \ x \geq 0 \\
+  --               -x & : \ x < 0
+  --               \end{array} \right.
+  --   ]], {i(1)}
+  -- )),
   s("list_enum",fmta(
     [[
     \begin{enumerate}

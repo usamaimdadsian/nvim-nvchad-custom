@@ -117,7 +117,7 @@ local plugins = {
 		"rcarriga/nvim-dap-ui",
     event = "VeryLazy",
 		config = require("custom.dap.ui"),
-		requires = { "mfussenegger/nvim-dap" },
+		dependencies = { "mfussenegger/nvim-dap" },
 	},
 
   {
@@ -140,21 +140,21 @@ local plugins = {
 		config = function()
 			require("nvim-dap-virtual-text").setup()
 		end,
-		requires = { "mfussenegger/nvim-dap" },
+		dependencies = { "mfussenegger/nvim-dap" },
 	},
   { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
   {
     "lervag/vimtex",
     lazy = false, -- lazy-loading will disable inverse search
     config = function()
-      vim.api.nvim_create_autocmd({ "FileType" }, {
-        group = vim.api.nvim_create_augroup("lazyvim_vimtex_conceal", { clear = true }),
-        pattern = { "bib", "tex" },
-        callback = function()
-          vim.wo.conceallevel = 2
-        end,
-      })
-
+      -- vim.api.nvim_create_autocmd({ "FileType" }, {
+      --   group = vim.api.nvim_create_augroup("lazyvim_vimtex_conceal", { clear = true }),
+      --   pattern = { "bib", "tex" },
+      --   callback = function()
+      --     vim.wo.conceallevel = 2
+      --   end,
+      -- })
+      
       vim.g.vimtex_mappings_disable = { ["n"] = { "K" } } -- disable `K` as it conflicts with LSP hover
       vim.g.vimtex_quickfix_method = vim.fn.executable("pplatex") == 1 and "pplatex" or "latexlog"
       vim.g.tex_flavor='latex'
@@ -168,6 +168,7 @@ local plugins = {
   },
   {
   	"L3MON4D3/LuaSnip",
+    tag = "v2.*",
     config = function()
       require("luasnip.loaders.from_lua").lazy_load({paths="~/.config/nvim/lua/custom/configs/snippets"})
     end
