@@ -4,13 +4,20 @@ local capabilities = require("plugins.configs.lspconfig").capabilities
 local lspconfig = require "lspconfig"
 
 -- if you just want default config for the servers then put them in a table
-local servers = {"html", "cssls", "tsserver", "clangd", "pyright", "texlab"}
+local servers = {"html", "cssls", "tsserver", "clangd", "pyright", "texlab", "yamlls"}
 
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
+  local lsp_config = {
     on_attach = on_attach,
     capabilities = capabilities,
   }
+  if lsp == "pyright" then
+    lsp_config.before_init = function(_, config)
+      config.settings.python.pythonPath = "/mnt/linux/python_envs/311_env/bin/python"
+    end
+  end
+
+  lspconfig[lsp].setup(lsp_config)
 end
 
 lspconfig["omnisharp"] = {

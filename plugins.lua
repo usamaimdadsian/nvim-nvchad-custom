@@ -192,6 +192,7 @@ local plugins = {
       -- Your options go here
       -- name = "venv",
       -- auto_refresh = false
+      dap_enabled = true
     },
     event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
     keys = {
@@ -243,7 +244,7 @@ local plugins = {
       { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
-  }
+  },
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
 }
 

@@ -66,6 +66,9 @@ M.mason = {
 
     -- c#
     "csharpier",
+
+    -- yaml
+    "yaml-language-server"
   },
 }
 
