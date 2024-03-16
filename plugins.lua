@@ -245,6 +245,14 @@ local plugins = {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
+  {
+    'dccsillag/magma-nvim',
+    run = ':UpdateRemotePlugins',
+    keys = {
+      { "<leader>r", ":MagmaEvaluateOperator<CR>", desc = "Python run" },
+      { "<leader>rr", ":MagmaEvaluateLine<CR>", desc = "Python run line" }
+    }
+  }
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
 }
 
