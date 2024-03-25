@@ -22,7 +22,8 @@ M.treesitter = {
     "python",
     "latex",
     "bibtex",
-    "c_sharp"
+    "c_sharp",
+    "meson"
   },
   indent = {
     enable = true,
@@ -69,7 +70,10 @@ M.mason = {
     "csharp-language-server",
 
     -- yaml
-    "yaml-language-server"
+    "yaml-language-server",
+
+    -- meson
+    "mesonlsp"
   },
 }
 

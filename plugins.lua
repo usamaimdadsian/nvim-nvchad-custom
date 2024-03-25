@@ -142,7 +142,6 @@ local plugins = {
 		end,
 		dependencies = { "mfussenegger/nvim-dap" },
 	},
-  { "Hoffs/omnisharp-extended-lsp.nvim", lazy = true },
   {
     "lervag/vimtex",
     lazy = false, -- lazy-loading will disable inverse search
@@ -184,23 +183,6 @@ local plugins = {
       local path = require("mason-registry").get_package("debugpy"):get_install_path()
       require("dap-python").setup(path .. "/venv/bin/python")
     end,
-  },
-  {
-    'linux-cultist/venv-selector.nvim',
-    dependencies = { 'neovim/nvim-lspconfig', 'nvim-telescope/telescope.nvim', 'mfussenegger/nvim-dap-python' },
-    opts = {
-      -- Your options go here
-      -- name = "venv",
-      -- auto_refresh = false
-      dap_enabled = true
-    },
-    event = 'VeryLazy', -- Optional: needed only if you want to type `:VenvSelect` without a keymapping
-    keys = {
-      -- Keymap to open VenvSelector to pick a venv.
-      { '<leader>pvs', '<cmd>VenvSelect<cr>' },
-      -- Keymap to retrieve the venv from a cache (the one previously used for the same project directory).
-      { '<leader>pvc', '<cmd>VenvSelectCached<cr>' },
-    },
   },
   -- {
   --   "rcarriga/nvim-notify",
@@ -245,14 +227,6 @@ local plugins = {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
-  {
-    'dccsillag/magma-nvim',
-    run = ':UpdateRemotePlugins',
-    keys = {
-      { "<leader>r", ":MagmaEvaluateOperator<CR>", desc = "Python run" },
-      { "<leader>rr", ":MagmaEvaluateLine<CR>", desc = "Python run line" }
-    }
-  }
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
 }
 
