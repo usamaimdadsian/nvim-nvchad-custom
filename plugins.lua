@@ -71,12 +71,14 @@ local plugins = {
   { import = "nvcommunity.editor.rainbowdelimiters" },
   -- { import = "nvcommunity.editor.biscuits" },
   { import = "nvcommunity.editor.hlargs" },
+  { import = "nvcommunity.editor.beacon" },
   { import = "nvcommunity.editor.illuminate" },
   { import = "nvcommunity.editor.treesittercontext" },
   { import = "nvcommunity.editor.treesj" },
   -- { import = "nvcommunity.folds.fold-cycle" },
   { import = "nvcommunity.folds.origami" },
   { import = "nvcommunity.diagnostics.trouble" },
+  { import = "nvcommunity.diagnostics.errorlens" },
   -- { import = "nvcommunity.lsp.barbecue" },
   { import = "nvcommunity.lsp.lspsaga" },
   { import = "nvcommunity.lsp.dim" },
@@ -227,7 +229,34 @@ local plugins = {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
+    {
+        "smoka7/multicursors.nvim",
+        event = "VeryLazy",
+        dependencies = {
+            'smoka7/hydra.nvim',
+        },
+        opts = {},
+        cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
+        keys = {
+                {
+                    mode = { 'v', 'n' },
+                    '<Leader>m',
+                    '<cmd>MCstart<cr>',
+                    desc = 'Create a selection for selected text or word under the cursor',
+                },
+            },
+    },
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
+    -- {
+    --      "folke/trouble.nvim",
+    --      dependencies = { "nvim-tree/nvim-web-devicons" },
+    --      opts = {},
+    -- }
+    {
+        "petertriho/nvim-scrollbar",
+         event = "BufWinEnter",
+         opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
+    }
 }
 
 return plugins

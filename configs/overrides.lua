@@ -69,6 +69,9 @@ M.mason = {
     "csharpier",
     "csharp-language-server",
 
+    -- javascript
+    "quick-lint-js",
+
     -- yaml
     "yaml-language-server",
 
