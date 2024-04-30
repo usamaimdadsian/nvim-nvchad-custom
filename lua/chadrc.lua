@@ -13,20 +13,6 @@ M.ui = {
   transparency = true
 }
 
-local opt = vim.opt
-opt.scrolloff = 8
-opt.relativenumber = true
--- opt.clipboard = "unnamedplus"
-opt.tabstop = 4
-opt.softtabstop = 4
-opt.shiftwidth = 4
-opt.expandtab = true
-opt.smartindent = true
 
-
-M.plugins = "plugins"
-
--- check core.mappings for table structure
-M.mappings = require "mappings"
 
 return M
