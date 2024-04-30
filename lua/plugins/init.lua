@@ -1,5 +1,6 @@
-local overrides = require("custom.configs.overrides")
-local dap = require("custom.dap.init")
+
+local overrides = require("../configs.overrides")
+local dap = require("../dap")
 
 ---@type NvPluginSpec[]
 local plugins = {
@@ -10,7 +11,7 @@ local plugins = {
     "neovim/nvim-lspconfig",
     config = function()
       require "plugins.configs.lspconfig"
-      require "custom.configs.lspconfig"
+      require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
 
@@ -44,7 +45,7 @@ local plugins = {
     --  for users those who want auto-save conform + lazyloading!
     -- event = "BufWritePre"
     config = function()
-      require "custom.configs.conform"
+      require "configs.conform"
     end,
   },
 
@@ -120,8 +121,9 @@ local plugins = {
   {
 		"rcarriga/nvim-dap-ui",
     event = "VeryLazy",
-		config = require("custom.dap.ui"),
-		dependencies = { "mfussenegger/nvim-dap" },
+		-- config = require("dap.ui"),
+    config = dap.ui,
+		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
 	},
 
   {
@@ -135,8 +137,9 @@ local plugins = {
       ensure_installed = {
         "codelldb",
       },
-      -- handlers = require("custom.dap").handlers
-      handlers = dap.handlers
+      -- handlers = require("dap").handlers
+      -- handlers = dap.handlers
+      -- handlers = dap.handlers
     },
   },
   {

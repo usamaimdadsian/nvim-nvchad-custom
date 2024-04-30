@@ -3,7 +3,7 @@
 local M = {}
 
 M.dap_config =  function(_,_)
-  require("core.utils").load_mappings("dap")
+  -- require("core.utils").load_mappings("dap")
 
   -- local dap = require("dap")
   --
@@ -16,7 +16,7 @@ M.handlers = {
     require('mason-nvim-dap').default_setup(config)
   end,
   -- require("custom.dap.adapters.codelldb")(config)
-  codelldb = require("custom.dap.adapters.codelldb")
+  codelldb = require("dap.adapters.codelldb")
 }
 
 
