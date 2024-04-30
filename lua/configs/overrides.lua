@@ -40,44 +40,29 @@ M.treesitter = {
 }
 
 M.mason = {
-  -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
   ensure_installed = {
     -- lua stuff
-    "lua-language-server",
     "stylua",
 
     -- web dev stuff
-    "css-lsp",
-    "html-lsp",
-    "typescript-language-server",
     "deno",
     "prettier",
 
     -- c/cpp stuff
-    "clangd",
     "clang-format",
 
     -- python 
-    "pyright",
     "black",
     "debugpy",
 
-    -- latex
-    "texlab",
-
     -- c#
     "csharpier",
-    "csharp-language-server",
 
-    -- javascript
-    "quick-lint-js",
-
-    -- yaml
-    "yaml-language-server",
-
-    -- meson
-    "mesonlsp"
   },
+}
+
+M.mason_lsp = {
+    "html", "cssls", "tsserver", "clangd", "pyright", "texlab", "yamlls", "csharp_ls", "lua_ls", "mesonlsp"
 }
 
 -- git support in nvimtree

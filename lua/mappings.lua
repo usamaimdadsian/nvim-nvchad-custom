@@ -4,8 +4,8 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
-map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "kj", "<ESC>")
+map("n","<leader>fm",function() require("conform").format() end,{ desc = "Format" })
 
 -- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
 -- ---@type MappingsTable

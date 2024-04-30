@@ -8,19 +8,26 @@ local plugins = {
   -- Override plugin definition options
 
   {
+    "williamboman/mason.nvim",
+    opts = overrides.mason
+  },
+  {
     "neovim/nvim-lspconfig",
+    event = { "VeryLazy", "BufRead" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+    },
     config = function()
-      require "plugins.configs.lspconfig"
+      require("mason-lspconfig").setup({
+        automatic_installation = true,
+      })
+      require "nvchad.configs.lspconfig"
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
   },
 
   -- override plugin configs
-  {
-    "williamboman/mason.nvim",
-    opts = overrides.mason
-  },
-
   {
     "nvim-treesitter/nvim-treesitter",
     opts = overrides.treesitter,
@@ -85,7 +92,7 @@ local plugins = {
   -- { import = "nvcommunity.lsp.barbecue" },
   { import = "nvcommunity.lsp.lspsaga" },
   { import = "nvcommunity.lsp.dim" },
-  { import = "nvcommunity.lsp.mason-lspconfig" },
+  -- { import = "nvcommunity.lsp.mason-lspconfig" },
   -- { import = "nvcommunity.lsp.prettyhover" },
 
   {
@@ -139,7 +146,7 @@ local plugins = {
       },
       -- handlers = require("dap").handlers
       -- handlers = dap.handlers
-      -- handlers = dap.handlers
+      handlers = dap.handlers
     },
   },
   {
@@ -234,34 +241,45 @@ local plugins = {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
-    {
-        "smoka7/multicursors.nvim",
-        event = "VeryLazy",
-        dependencies = {
-            'smoka7/hydra.nvim',
-        },
-        opts = {},
-        cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
-        keys = {
-                {
-                    mode = { 'v', 'n' },
-                    '<Leader>m',
-                    '<cmd>MCstart<cr>',
-                    desc = 'Create a selection for selected text or word under the cursor',
-                },
-            },
+  {
+    "smoka7/multicursors.nvim",
+    event = "VeryLazy",
+    dependencies = {
+        'smoka7/hydra.nvim',
     },
+    opts = {},
+    cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
+    keys = {
+      {
+        mode = { 'v', 'n' },
+        '<Leader>m',
+        '<cmd>MCstart<cr>',
+        desc = 'Create a selection for selected text or word under the cursor',
+      },
+    },
+  },
   -- require("luasnip.loaders.from_snipmate").lazy_load({paths="./snippets"})
     -- {
     --      "folke/trouble.nvim",
     --      dependencies = { "nvim-tree/nvim-web-devicons" },
     --      opts = {},
     -- }
-    {
-        "petertriho/nvim-scrollbar",
-         event = "BufWinEnter",
-        opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
-    }
+  {
+    "petertriho/nvim-scrollbar",
+     event = "BufWinEnter",
+    opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
+  },
+  {
+    "hedyhli/outline.nvim",
+    lazy = true,
+    cmd = { "Outline", "OutlineOpen" },
+    keys = { -- Example mapping to toggle outline
+      { "<leader>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
+    },
+    opts = {
+      -- Your setup opts here
+    },
+  },
 }
 
 return plugins
