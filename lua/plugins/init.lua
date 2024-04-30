@@ -135,7 +135,7 @@ local plugins = {
 
   {
     "jay-babu/mason-nvim-dap.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
     dependencies = {
       "williamboman/mason.nvim",
       "mfussenegger/nvim-dap",
