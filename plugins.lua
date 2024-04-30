@@ -75,6 +75,7 @@ local plugins = {
   { import = "nvcommunity.editor.illuminate" },
   { import = "nvcommunity.editor.treesittercontext" },
   { import = "nvcommunity.editor.treesj" },
+  { import = "nvcommunity.file-explorer.oil-nvim" },
   -- { import = "nvcommunity.folds.fold-cycle" },
   -- { import = "nvcommunity.folds.origami" },
   { import = "nvcommunity.folds.ufo" },
@@ -256,7 +257,7 @@ local plugins = {
     {
         "petertriho/nvim-scrollbar",
          event = "BufWinEnter",
-    opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
+        opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
     }
 }
 
