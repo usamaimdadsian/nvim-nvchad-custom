@@ -51,7 +51,7 @@ M.mason = {
     -- c/cpp stuff
     "clang-format",
 
-    -- python 
+    -- python
     "black",
     "debugpy",
 
@@ -79,6 +79,57 @@ M.nvimtree = {
       },
     },
   },
+}
+
+M.telescope = {
+	defaults = {
+		vimgrep_arguments = {
+			"rg",
+			"-L",
+			"--color=never",
+			"--no-heading",
+			"--with-filename",
+			"--line-number",
+			"--column",
+			"--smart-case",
+			"--hidden",
+		},
+		mappings = {
+			i = {
+				["<esc>"] = function(...)
+					require("telescope.actions").close(...)
+				end,
+			},
+		},
+	},
+  extensions = {
+    persisted = {
+      layout_config = { width = 0.55, height = 0.55 }
+    }
+  }
+}
+
+M.gitsigns = {
+	signs = {
+		add = { hl = "GitSignsAdd", text = "+", numhl = "GitSignsAddNr" },
+	},
+}
+
+M.cmp = {
+	formatting = {
+		format = function(entry, vim_item)
+			local icons = require("nvchad.icons.lspkind")
+			vim_item.kind = string.format("%s %s", icons[vim_item.kind], vim_item.kind)
+			vim_item.menu = ({
+				luasnip = "[Luasnip]",
+				nvim_lsp = "[Nvim LSP]",
+				buffer = "[Buffer]",
+				nvim_lua = "[Nvim Lua]",
+				path = "[Path]",
+			})[entry.source.name]
+			return vim_item
+		end,
+	},
 }
 
 return M
