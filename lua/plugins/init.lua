@@ -159,6 +159,41 @@ local plugins = {
       -- delete(functi*on calls)     dsf             function calls
     end
   },
+  -- Change buffer style
+  {
+    'akinsho/bufferline.nvim',
+    version = "*",
+    lazy = false,
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function ()
+      -- vim.opt.termguicolors = true
+      require("bufferline").setup({
+        options = {
+          -- separator_style = "slope",
+          indicator = {
+              icon = '▎', -- this should be omitted if indicator style is not 'icon'
+              style = 'underline',
+          },
+          -- diagnostics = "nvim_lsp",
+          hover = {
+            enabled = true,
+            delay = 150,
+            reveal = {'close'}
+          },
+        },
+
+        highlights = {
+          buffer_selected = {
+            fg = 'orange',
+            bold = true,
+            italic = true,
+          },
+
+        },
+      })
+    end
+
+  },
   { -- reduce escaping time with kj
     "max397574/better-escape.nvim",
     event = "InsertEnter",

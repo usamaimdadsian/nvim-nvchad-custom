@@ -4,43 +4,26 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
-map("i", "kj", "<ESC>")
+map({"i","v"}, "kj", "<ESC>")
 map("n","<leader>fm",function() require("conform").format() end,{ desc = "Format" })
+map("v",">",">gv",{ desc = "indent selected lines" }) -- indent selected lines
+map("v","<","<gv",{ desc = "unindent selected lines" }) -- unindent selected lines
+map("n","<leader>X","<cmd>bufdo bwipeout<cr>",{ desc = "Close all buffers" }) -- Close all buffers
+map("n","<tab>","<cmd>bn<cr>",{ desc = "go to next buffer" }) -- go to next buffer
+map("n","<s-tab>","<cmd>bp<cr>",{ desc = "go to previous buffer" }) -- go to previous buffer
+map("n","<leader><tab>","<cmd>b#<cr>",{ desc = "go to previous buffer" }) -- go to previous buffer
 
--- map({ "n", "i", "v" }, "<C-s>", "<cmd> w <cr>")
--- ---@type MappingsTable
 
--- local lastActiveBuffer = nil
-
--- local M = {}
-
--- M.general = {
---   i = {
---     ["kj"] = {
---       "<Esc>",
---       "Escape to Normal Mode"
+-- Dap Mapping
+map("n","<leader>db","<cmd> DapToggleBreakpoint <CR>",{desc = "Add breakpoint at line" })
+map("n","<leader>dB",":lua require'dap'.set_breakpoint(vim.fn.input('BreakPoint Condition: '))<CR>",{desc = "Conditional Breakpoint" })
+map("n","<leader>dq",":DapTerminate <CR>",{desc = "Terminate Session" })
+map("n","<leader>dr",":DapRestart <CR>",{desc = "Restart Session" })
+map("n","<F5>",":lua require'dap'.continue() <CR>",{desc = "Start or continue the debugger" })
+map("n","<F2>",":lua require'dap'.step_over() <CR>",{desc = "Step Over" })
+map("n","<F3>",":lua require'dap'.step_into() <CR>",{desc = "Step Into" })
+map("n","<F4>",":lua require'dap'.step_out() <CR>",{desc = "Step Out" })
 --     }
---   },
-
---   n = {
-
---     --  format with conform
---     ["<leader>fm"] = {
---       function()
---         require("conform").format()
---       end,
---       "formatting",
---     }
-
---   },
---   v = {
---     [">"] = { ">gv", "indent"},
---     ["kj"] = {
---       "<Esc>",
---       "Escape to Normal Mode"
---     }
---   },
--- }
 
 -- M.tabufline = {
 --   plugin = true,
@@ -55,43 +38,3 @@ map("n","<leader>fm",function() require("conform").format() end,{ desc = "Format
 --   }
 -- }
 
--- M.dap = {
---   n = {
---     ["<leader>db"] = {
---       "<cmd> DapToggleBreakpoint <CR>",
---       "Add breakpoint at line",
---     },
---     ["<leader>dB"] = {
---       ":lua require'dap'.set_breakpoint(vim.fn.input('BreakPoint Condition: '))<CR>",
---       "Conditional Breakpoint",
---     },
---     ["<leader>dq"] = {
---       ":DapTerminate <CR>",
---       "Terminate Session",
---     },
---     ["<leader>dr"] = {
---       ":DapRestart <CR>",
---       "Restart Session",
---     },
---     ["<F5>"] = {
---       ":lua require'dap'.continue() <CR>",
---       "Start or continue the debugger"
---     },
---     ["<F2>"] = {
---       ":lua require'dap'.step_over() <CR>",
---       "Step Over"
---     },
---     ["<F3>"] = {
---       ":lua require'dap'.step_into() <CR>",
---       "Step Into"
---     },
---     ["<F4>"] = {
---       ":lua require'dap'.step_out() <CR>",
---       "Step Out"
---     }
---   },
--- }
-
--- -- more keybinds!
-
--- return M
