@@ -23,6 +23,18 @@ map("n","<F5>",":lua require'dap'.continue() <CR>",{desc = "Start or continue th
 map("n","<F2>",":lua require'dap'.step_over() <CR>",{desc = "Step Over" })
 map("n","<F3>",":lua require'dap'.step_into() <CR>",{desc = "Step Into" })
 map("n","<F4>",":lua require'dap'.step_out() <CR>",{desc = "Step Out" })
+
+
+-- Bookmark Mapping
+map("n","<leader><leader>mm",":BookmarkToggle<CR>",{desc = "Bookmark Toggle" })
+map("n","<leader><leader>mi",":BookmarkAnnotate<CR>",{desc = "Bookmark Annotate" })
+map("n","<leader><leader>mn",":BookmarkNext<CR>",{desc = "Bookmark Next" })
+map("n","<leader><leader>mp",":BookmarkPrev<CR>",{desc = "Bookmark Previous" })
+map("n","<leader><leader>ma",":BookmarkShowAll<CR>",{desc = "Bookmark Show All" })
+map("n","<leader><leader>mc",":BookmarkClear<CR>",{desc = "Bookmark Clear" })
+map("n","<leader><leader>mx",":BookmarkClearAll<CR>",{desc = "Bookmark Clear All" })
+map("n","<leader><leader>mkk",":BookmarkMoveUp<CR>",{desc = "Bookmark Move Up" })
+map("n","<leader><leader>mjj",":BookmarkMoveDown<CR>",{desc = "Bookmark Move Down" })
 --     }
 
 -- M.tabufline = {

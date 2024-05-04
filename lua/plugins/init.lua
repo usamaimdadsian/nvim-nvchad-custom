@@ -51,7 +51,7 @@ local plugins = {
     end,
   },
 
-  -- NVCHAD default changings
+ -- NVCHAD default changings
   {
     "nvim-tree/nvim-tree.lua",
     opts = overrides.nvimtree,
@@ -62,7 +62,13 @@ local plugins = {
 	},
   {
     "lewis6991/gitsigns.nvim",
-    opts = overrides.gitsigns
+    opts = overrides.gitsigns,
+    dependencies = {
+      {
+        "sindrets/diffview.nvim",
+        config = true,
+      },
+    }
   },
 	{
 		"hrsh7th/nvim-cmp",
@@ -119,19 +125,22 @@ local plugins = {
 
 
   {"NvChad/nvcommunity"},
-  { import = "nvcommunity.git.diffview" },
-  { import = "nvcommunity.git.lazygit" },
   { import = "nvcommunity.motion.hop" },
+      -- map("n", "<leader><leader>w", "<CMD> HopWord <CR>", { desc = "Hint all words" })
+      -- map("n", "<leader><leader>t", "<CMD> HopNodes <CR>", { desc = "Hint Tree" })
+      -- map("n", "<leader><leader>c", "<CMD> HopLineStart<CR>", { desc = "Hint Columns" })
+      -- map("n", "<leader><leader>l", "<CMD> HopWordCurrentLine<CR>", { desc = "Hint Line" })
   { import = "nvcommunity.motion.bookmarks" },
   { import = "nvcommunity.motion.neoscroll" },
+    -- <C-d> for going for ctrl-down, <C-u> for going up
   { import = "nvcommunity.motion.harpoon" },
-  { import = "nvcommunity.editor.rainbowdelimiters" },
+  { import = "nvcommunity.editor.rainbowdelimiters" }, -- color brackets
   -- { import = "nvcommunity.editor.biscuits" },
-  { import = "nvcommunity.editor.hlargs" },
-  { import = "nvcommunity.editor.beacon" },
-  { import = "nvcommunity.editor.illuminate" },
-  { import = "nvcommunity.editor.treesittercontext" },
-  { import = "nvcommunity.editor.treesj" },
+  { import = "nvcommunity.editor.hlargs" }, -- higlight arguments
+  { import = "nvcommunity.editor.beacon" }, -- cursor flash on jumps
+  { import = "nvcommunity.editor.illuminate" }, -- highlights others words similar to the word under the cursor
+  { import = "nvcommunity.editor.treesittercontext" }, -- show code context, first line of block on scroll
+  { import = "nvcommunity.editor.treesj" }, -- <leader>m splitting or joining the code
   { import = "nvcommunity.file-explorer.oil-nvim" },
   -- { import = "nvcommunity.folds.fold-cycle" },
   -- { import = "nvcommunity.folds.origami" },
