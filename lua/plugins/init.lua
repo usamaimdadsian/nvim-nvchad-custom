@@ -1,6 +1,5 @@
-
-local overrides = require("../configs.overrides")
-local dap = require("../dap")
+local overrides = require "../configs.overrides"
+local dap = require "custom_dap"
 
 ---@type NvPluginSpec[]
 local plugins = {
@@ -21,7 +20,7 @@ local plugins = {
 
   {
     "williamboman/mason.nvim",
-    opts = overrides.mason
+    opts = overrides.mason,
   },
   {
     "neovim/nvim-lspconfig",
@@ -31,9 +30,9 @@ local plugins = {
       "williamboman/mason-lspconfig.nvim",
     },
     config = function()
-      require("mason-lspconfig").setup({
+      require("mason-lspconfig").setup {
         automatic_installation = true,
-      })
+      }
       require "nvchad.configs.lspconfig"
       require "configs.lspconfig"
     end, -- Override to setup mason-lspconfig
@@ -51,15 +50,15 @@ local plugins = {
     end,
   },
 
- -- NVCHAD default changings
+  -- NVCHAD default changings
   {
     "nvim-tree/nvim-tree.lua",
     opts = overrides.nvimtree,
   },
-	{
-		"nvim-telescope/telescope.nvim",
-		opts = overrides.telescope,
-	},
+  {
+    "nvim-telescope/telescope.nvim",
+    opts = overrides.telescope,
+  },
   {
     "lewis6991/gitsigns.nvim",
     opts = overrides.gitsigns,
@@ -68,75 +67,78 @@ local plugins = {
         "sindrets/diffview.nvim",
         config = true,
       },
-    }
+    },
   },
-	{
-		"hrsh7th/nvim-cmp",
-		opts = overrides.cmp,
-	},
+  {
+    "hrsh7th/nvim-cmp",
+    opts = overrides.cmp,
+  },
 
   -- DAP Configuration
   {
-		"mfussenegger/nvim-dap",
-		config = dap.dap_config,
-  },
-  {
-		"rcarriga/nvim-dap-ui",
-    event = "VeryLazy",
-		-- config = require("dap.ui"),
-    config = dap.ui,
-		dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
-	},
-  {
-    "jay-babu/mason-nvim-dap.nvim",
-    -- event = "VeryLazy",
+    "mfussenegger/nvim-dap",
+    config = dap.dap_config,
+    -- config = dap.dap_config,
     dependencies = {
-      "williamboman/mason.nvim",
-      "mfussenegger/nvim-dap",
-    },
-    opts = {
-      ensure_installed = {
-        "codelldb",
+      {
+        "rcarriga/nvim-dap-ui",
+        event = "VeryLazy",
+        -- config = require("dap.ui"),
+        config = dap.ui,
+        dependencies = {
+          "nvim-neotest/nvim-nio"
+        }
       },
-      automatic_installation = true,
-      -- handlers = require("dap").handlers
-      -- handlers = dap.handlers
-      handlers = dap.handlers
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        config = function()
+          require("nvim-dap-virtual-text").setup()
+        end,
+      },
+      {
+        "jay-babu/mason-nvim-dap.nvim",
+        -- event = "VeryLazy",
+        cmd = { "DapInstall", "DapUninstall" },
+        dependencies = {
+          "williamboman/mason.nvim",
+        },
+        opts = {
+          ensure_installed = {
+            "codelldb",
+          },
+          automatic_installation = true,
+          -- handlers = require("dap").handlers
+          -- handlers = dap.handlers
+          handlers = dap.handlers,
+        },
+      },
+      {
+        "mfussenegger/nvim-dap-python",
+        -- stylua: ignore
+        keys = {
+          { "<leader>dPt", function() require('dap-python').test_method() end, desc = "Debug Method", ft = "python" },
+          { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
+        },
+        config = function()
+          local path = require("mason-registry").get_package("debugpy"):get_install_path()
+          require("dap-python").setup(path .. "/venv/bin/python")
+        end,
+      },
+      {
+        "folke/neoconf.nvim",
+      },
     },
   },
-  {
-		"theHamsta/nvim-dap-virtual-text",
-		config = function()
-			require("nvim-dap-virtual-text").setup()
-		end,
-		dependencies = { "mfussenegger/nvim-dap" },
-	},
-  {
-    "mfussenegger/nvim-dap-python",
-    -- stylua: ignore
-    keys = {
-      { "<leader>dPt", function() require('dap-python').test_method() end, desc = "Debug Method", ft = "python" },
-      { "<leader>dPc", function() require('dap-python').test_class() end, desc = "Debug Class", ft = "python" },
-    },
-    config = function()
-      local path = require("mason-registry").get_package("debugpy"):get_install_path()
-      require("dap-python").setup(path .. "/venv/bin/python")
-    end,
-  },
-  {
-    "folke/neoconf.nvim",
-  },
 
-
-  {"NvChad/nvcommunity"},
+  { "NvChad/nvcommunity" },
   { import = "nvcommunity.motion.hop" },
-      -- map("n", "<leader><leader>w", "<CMD> HopWord <CR>", { desc = "Hint all words" })
-      -- map("n", "<leader><leader>t", "<CMD> HopNodes <CR>", { desc = "Hint Tree" })
-      -- map("n", "<leader><leader>c", "<CMD> HopLineStart<CR>", { desc = "Hint Columns" })
-      -- map("n", "<leader><leader>l", "<CMD> HopWordCurrentLine<CR>", { desc = "Hint Line" })
+  -- map("n", "<leader><leader>w", "<CMD> HopWord <CR>", { desc = "Hint all words" })
+  -- map("n", "<leader><leader>t", "<CMD> HopNodes <CR>", { desc = "Hint Tree" })
+  -- map("n", "<leader><leader>c", "<CMD> HopLineStart<CR>", { desc = "Hint Columns" })
+  -- map("n", "<leader><leader>l", "<CMD> HopWordCurrentLine<CR>", { desc = "Hint Line" })
   { import = "nvcommunity.motion.bookmarks" },
   { import = "nvcommunity.motion.neoscroll" },
-    -- <C-d> for going for ctrl-down, <C-u> for going up
+  -- <C-d> for going for ctrl-down, <C-u> for going up
   { import = "nvcommunity.motion.harpoon" },
   { import = "nvcommunity.editor.rainbowdelimiters" }, -- color brackets
   -- { import = "nvcommunity.editor.biscuits" },
@@ -162,7 +164,7 @@ local plugins = {
     version = "*", -- Use for stability; omit to use `main` branch for the latest features
     event = "VeryLazy",
     config = function()
-      require("nvim-surround").setup({})
+      require("nvim-surround").setup {}
       -- surr*ound_words             ysiw)           (surround_words)
       -- *make strings               ys$"            "make strings"
       -- [delete ar*ound me!]        ds]             delete around me!
@@ -170,42 +172,40 @@ local plugins = {
       -- 'change quot*es'            cs'"            "change quotes"
       -- <b>or tag* types</b>        csth1<CR>       <h1>or tag types</h1>
       -- delete(functi*on calls)     dsf             function calls
-    end
+    end,
   },
   -- Change buffer style
   {
-    'akinsho/bufferline.nvim',
+    "akinsho/bufferline.nvim",
     version = "*",
     lazy = false,
-    dependencies = 'nvim-tree/nvim-web-devicons',
-    config = function ()
+    dependencies = "nvim-tree/nvim-web-devicons",
+    config = function()
       -- vim.opt.termguicolors = true
-      require("bufferline").setup({
+      require("bufferline").setup {
         options = {
           -- separator_style = "slope",
           indicator = {
-              icon = '▎', -- this should be omitted if indicator style is not 'icon'
-              style = 'underline',
+            icon = "▎", -- this should be omitted if indicator style is not 'icon'
+            style = "underline",
           },
           -- diagnostics = "nvim_lsp",
           hover = {
             enabled = true,
             delay = 150,
-            reveal = {'close'}
+            reveal = { "close" },
           },
         },
 
         highlights = {
           buffer_selected = {
-            fg = 'orange',
+            fg = "orange",
             bold = true,
             italic = true,
           },
-
         },
-      })
-    end
-
+      }
+    end,
   },
   { -- reduce escaping time with kj
     "max397574/better-escape.nvim",
@@ -222,36 +222,36 @@ local plugins = {
     opts = {
       size = 15,
       open_mapping = "<c-t>",
-    }
+    },
   },
 
   {
-  	"L3MON4D3/LuaSnip",
+    "L3MON4D3/LuaSnip",
     tag = "v2.*",
     config = function()
-      require("luasnip.loaders.from_lua").lazy_load({paths="~/.config/nvim/lua/custom/configs/snippets"})
-    end
+      require("luasnip.loaders.from_lua").lazy_load { paths = "~/.config/nvim/lua/custom/configs/snippets" }
+    end,
   },
   {
     "smoka7/multicursors.nvim",
     event = "VeryLazy",
     dependencies = {
-        'smoka7/hydra.nvim',
+      "smoka7/hydra.nvim",
     },
     opts = {},
-    cmd = { 'MCstart', 'MCvisual', 'MCclear', 'MCpattern', 'MCvisualPattern', 'MCunderCursor' },
+    cmd = { "MCstart", "MCvisual", "MCclear", "MCpattern", "MCvisualPattern", "MCunderCursor" },
     keys = {
       {
-        mode = { 'v', 'n' },
-        '<Leader>m',
-        '<cmd>MCstart<cr>',
-        desc = 'Create a selection for selected text or word under the cursor',
+        mode = { "v", "n" },
+        "<Leader>m",
+        "<cmd>MCstart<cr>",
+        desc = "Create a selection for selected text or word under the cursor",
       },
     },
   },
   {
     "petertriho/nvim-scrollbar",
-     event = "BufWinEnter",
+    event = "BufWinEnter",
     opts = { excluded_filetypes = { "prompt", "TelescopePrompt", "noice", "notify", "neo-tree" } },
   },
   {
@@ -268,15 +268,15 @@ local plugins = {
   {
     "olimorris/persisted.nvim",
     lazy = false,
-    config = function ()
+    config = function()
       -- require("telescope").load_extension("persisted")
-      require("persisted").setup({
+      require("persisted").setup {
         autoload = true,
         on_autoload_no_session = function()
-          vim.notify("No existing session to load.")
-        end
-      })
-    end
+          vim.notify "No existing session to load."
+        end,
+      }
+    end,
   },
 
   -- Language Support
@@ -291,15 +291,15 @@ local plugins = {
       --     vim.wo.conceallevel = 2
       --   end,
       -- })
-      
+
       vim.g.vimtex_mappings_disable = { ["n"] = { "K" } } -- disable `K` as it conflicts with LSP hover
-      vim.g.vimtex_quickfix_method = vim.fn.executable("pplatex") == 1 and "pplatex" or "latexlog"
-      vim.g.tex_flavor='latex'
-      vim.g.vimtex_view_method='zathura'
-      vim.g.vimtex_quickfix_mode=0
-      vim.g.conceallevel=1
-      vim.g.tex_conceal='abdmg'
-      vim.g.vimtex_compiler_method='latexmk'
+      vim.g.vimtex_quickfix_method = vim.fn.executable "pplatex" == 1 and "pplatex" or "latexlog"
+      vim.g.tex_flavor = "latex"
+      vim.g.vimtex_view_method = "zathura"
+      vim.g.vimtex_quickfix_mode = 0
+      vim.g.conceallevel = 1
+      vim.g.tex_conceal = "abdmg"
+      vim.g.vimtex_compiler_method = "latexmk"
       -- vim.g.vimtex_compiler_method='tectonic'
     end,
   },
