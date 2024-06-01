@@ -78,7 +78,7 @@ local plugins = {
   -- DAP Configuration
   {
 		"mfussenegger/nvim-dap",
-		config = dap.dap_config
+		config = dap.dap_config,
   },
   {
 		"rcarriga/nvim-dap-ui",
@@ -98,6 +98,7 @@ local plugins = {
       ensure_installed = {
         "codelldb",
       },
+      automatic_installation = true,
       -- handlers = require("dap").handlers
       -- handlers = dap.handlers
       handlers = dap.handlers
@@ -121,6 +122,9 @@ local plugins = {
       local path = require("mason-registry").get_package("debugpy"):get_install_path()
       require("dap-python").setup(path .. "/venv/bin/python")
     end,
+  },
+  {
+    "folke/neoconf.nvim",
   },
 
 

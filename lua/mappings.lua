@@ -15,15 +15,16 @@ map("n","<leader><tab>","<cmd>b#<cr>",{ desc = "go to previous buffer" }) -- go 
 
 
 -- Dap Mapping
-map("n","<leader>db","<cmd> DapToggleBreakpoint <CR>",{desc = "Add breakpoint at line" })
+map("n","<leader>db",":lua require('dap').toggle_breakpoint()<CR>",{desc = "Add breakpoint at line" })
 map("n","<leader>dB",":lua require'dap'.set_breakpoint(vim.fn.input('BreakPoint Condition: '))<CR>",{desc = "Conditional Breakpoint" })
-map("n","<leader>dq",":DapTerminate <CR>",{desc = "Terminate Session" })
+map("n","<leader>dt",":DapTerminate <CR>",{desc = "Terminate Session" })
 map("n","<leader>dr",":DapRestart <CR>",{desc = "Restart Session" })
-map("n","<F5>",":lua require'dap'.continue() <CR>",{desc = "Start or continue the debugger" })
-map("n","<F2>",":lua require'dap'.step_over() <CR>",{desc = "Step Over" })
-map("n","<F3>",":lua require'dap'.step_into() <CR>",{desc = "Step Into" })
-map("n","<F4>",":lua require'dap'.step_out() <CR>",{desc = "Step Out" })
-
+map("n","<leader>dc",":lua require'dap'.continue() <CR>",{desc = "Start or continue the debugger" })
+map("n","<leader>do",":lua require'dap'.step_over() <CR>",{desc = "Step Over" })
+map("n","<leader>di",":lua require'dap'.step_into() <CR>",{desc = "Step Into" })
+map("n","<leader>dO",":lua require'dap'.step_out() <CR>",{desc = "Step Out" })
+map("n", "<leader>dr", "<cmd>lua require'dap'.repl.toggle()<cr>",{desc = "Interactively execute code during debugging" } )
+map("n", "<leader>dl", "<cmd>lua require'dap'.run_last()<cr>", {desc = "Run Last Session"})
 
 -- Bookmark Mapping
 map("n","<leader><leader>mm",":BookmarkToggle<CR>",{desc = "Bookmark Toggle" })
