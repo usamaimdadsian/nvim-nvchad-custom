@@ -1,23 +1,7 @@
 local overrides = require "../configs.overrides"
 local dap = require "custom_dap"
 
----@type NvPluginSpec[]
-local plugins = {
-
-  -- To make a plugin not be loaded
-  -- {
-  --   "NvChad/nvim-colorizer.lua",
-  --   enabled = false
-  -- },
-
-  -- All NvChad plugins are lazy-loaded by default
-  -- For a plugin to be loaded, you will need to set either `ft`, `cmd`, `keys`, `event`, or set `lazy = false`
-  -- If you want a plugin to load on startup, add `lazy = false` to a plugin spec, for example
-  -- {
-  --   "mg979/vim-visual-multi",
-  --   lazy = false,
-  -- }
-
+return {
   {
     "williamboman/mason.nvim",
     opts = overrides.mason,
@@ -86,8 +70,8 @@ local plugins = {
         -- config = require("dap.ui"),
         config = dap.ui,
         dependencies = {
-          "nvim-neotest/nvim-nio"
-        }
+          "nvim-neotest/nvim-nio",
+        },
       },
       {
         "theHamsta/nvim-dap-virtual-text",
@@ -129,7 +113,6 @@ local plugins = {
       },
     },
   },
-
   { "NvChad/nvcommunity" },
   { import = "nvcommunity.motion.hop" },
   -- map("n", "<leader><leader>w", "<CMD> HopWord <CR>", { desc = "Hint all words" })
@@ -152,7 +135,7 @@ local plugins = {
   -- { import = "nvcommunity.folds.origami" },
   { import = "nvcommunity.folds.ufo" },
   { import = "nvcommunity.diagnostics.trouble" },
-  { import = "nvcommunity.diagnostics.errorlens" },
+  -- { import = "nvcommunity.diagnostics.errorlens" },
   -- { import = "nvcommunity.lsp.barbecue" },
   { import = "nvcommunity.lsp.lspsaga" },
   { import = "nvcommunity.lsp.dim" },
@@ -172,39 +155,6 @@ local plugins = {
       -- 'change quot*es'            cs'"            "change quotes"
       -- <b>or tag* types</b>        csth1<CR>       <h1>or tag types</h1>
       -- delete(functi*on calls)     dsf             function calls
-    end,
-  },
-  -- Change buffer style
-  {
-    "akinsho/bufferline.nvim",
-    version = "*",
-    lazy = false,
-    dependencies = "nvim-tree/nvim-web-devicons",
-    config = function()
-      -- vim.opt.termguicolors = true
-      require("bufferline").setup {
-        options = {
-          -- separator_style = "slope",
-          indicator = {
-            icon = "▎", -- this should be omitted if indicator style is not 'icon'
-            style = "underline",
-          },
-          -- diagnostics = "nvim_lsp",
-          hover = {
-            enabled = true,
-            delay = 150,
-            reveal = { "close" },
-          },
-        },
-
-        highlights = {
-          buffer_selected = {
-            fg = "orange",
-            bold = true,
-            italic = true,
-          },
-        },
-      }
     end,
   },
   { -- reduce escaping time with kj
@@ -303,6 +253,5 @@ local plugins = {
       -- vim.g.vimtex_compiler_method='tectonic'
     end,
   },
-}
 
-return plugins
+}
