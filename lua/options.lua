@@ -5,7 +5,7 @@ require "nvchad.options"
 local opt = vim.opt
 opt.scrolloff = 8
 opt.relativenumber = true
--- opt.clipboard = "unnamedplus"
+opt.clipboard = "unnamedplus"
 opt.tabstop = 2
 opt.softtabstop = 2
 opt.shiftwidth = 2
