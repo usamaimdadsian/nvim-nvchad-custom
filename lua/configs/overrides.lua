@@ -113,7 +113,7 @@ M.telescope = {
 
 M.gitsigns = {
 	signs = {
-		add = { hl = "GitSignsAdd", text = "+", numhl = "GitSignsAddNr" },
+		add = {text = "+"},
 	},
 }
 
