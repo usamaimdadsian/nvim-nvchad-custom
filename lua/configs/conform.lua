@@ -1,6 +1,7 @@
 --type conform.options
 -- You can view this list in vim with :help conform-formatters
 -- repository: https://github.com/stevearc/conform.nvim
+-- https://github.com/stevearc/conform.nvim?tab=readme-ov-file#formatters
 local options = {
 	lsp_fallback = true,
 
@@ -16,6 +17,7 @@ local options = {
     cpp = {"clang_format"},
     python = {"black"},
     cs = {"csharpier"},
+    c = {"clang_format"}
 	},
 
   -- adding same formatter for multiple filetypes can look too much work for some

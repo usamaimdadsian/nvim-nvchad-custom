@@ -5,7 +5,7 @@
 local M = {}
 
 M.ui = {
-  theme = "catppuccin",
+  theme = "tokyonight",
   theme_toggle = { "onedark", "one_light" },
   transparency = true,
 

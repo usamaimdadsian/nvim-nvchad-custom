@@ -16,7 +16,7 @@ M.handlers = {
     require('mason-nvim-dap').default_setup(config)
   end,
   -- require("custom.dap.adapters.codelldb")(config)
-  codelldb = require("custom_dap.adapters.codelldb")
+  -- codelldb = require("custom_dap.adapters.codelldb")
 }
 
 M.ui = require("custom_dap.ui")

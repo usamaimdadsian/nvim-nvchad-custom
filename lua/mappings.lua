@@ -18,7 +18,14 @@ map("n","<leader>db",":lua require('dap').toggle_breakpoint()<CR>",{desc = "Add 
 map("n","<leader>dB",":lua require'dap'.set_breakpoint(vim.fn.input('BreakPoint Condition: '))<CR>",{desc = "Conditional Breakpoint" })
 map("n","<leader>dt",":DapTerminate <CR>",{desc = "Terminate Session" })
 map("n","<leader>dr",":DapRestart <CR>",{desc = "Restart Session" })
-map("n","<leader>dc",":lua require'dap'.continue() <CR>",{desc = "Start or continue the debugger" })
+-- map("n","<leader>dc",":lua require'dap'.continue() <CR>",{desc = "Start or continue the debugger" })
+map("n","<leader>dc",function ()
+  if vim.fn.filereadable(".vscode/launch.json") then
+    require("dap.ext.vscode").load_launchjs(nil, {})
+  end
+  require("dap").continue()
+end,{desc = "Start or continue the debugger" })
+
 map("n","<leader>do",":lua require'dap'.step_over() <CR>",{desc = "Step Over" })
 map("n","<leader>di",":lua require'dap'.step_into() <CR>",{desc = "Step Into" })
 map("n","<leader>dO",":lua require'dap'.step_out() <CR>",{desc = "Step Out" })

@@ -24,7 +24,8 @@ M.treesitter = {
     "bibtex",
     "c_sharp",
     "meson",
-    "rust"
+    "rust",
+    "go"
   },
   indent = {
     enable = true,
@@ -59,12 +60,17 @@ M.mason = {
     -- c#
     "csharpier",
 
+    -- go
+    "gofmt",
+
+    -- rust
+    "rustfmt",
   },
 }
 
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 M.mason_lsp = {
-    "html", "cssls", "tsserver", "clangd", "pyright", "texlab", "yamlls", "csharp_ls", "lua_ls", "mesonlsp", "jsonls", "rust_analyzer"
+    "html", "cssls", "tsserver", "clangd", "pyright", "texlab", "yamlls", "csharp_ls", "lua_ls", "mesonlsp", "jsonls", "rust_analyzer", "gopls", "cmake"
 }
 
 -- git support in nvimtree
