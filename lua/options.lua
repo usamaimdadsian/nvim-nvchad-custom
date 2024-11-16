@@ -13,3 +13,10 @@ opt.expandtab = true
 opt.smartindent = true
 opt.spelllang = 'en_us'
 opt.spell = true
+opt.termguicolors = true
+
+vim.cmd [[hi Normal guibg=NONE ctermbg=NONE]]
+vim.cmd [[hi NonText guibg=NONE ctermbg=NONE]]
+vim.cmd [[hi SignColumn guibg=NONE ctermbg=NONE]]
+vim.cmd [[hi NormalNC guibg=NONE ctermbg=NONE]]
+vim.cmd [[hi VertSplit guibg=NONE ctermbg=NONE]]

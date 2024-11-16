@@ -70,7 +70,7 @@ M.mason = {
 
 -- https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers
 M.mason_lsp = {
-    "html", "cssls", "tsserver", "clangd", "pyright", "texlab", "yamlls", "csharp_ls", "lua_ls", "mesonlsp", "jsonls", "rust_analyzer", "gopls", "cmake"
+    "html", "cssls", "ts_ls", "clangd", "pyright", "texlab", "yamlls", "csharp_ls", "lua_ls", "mesonlsp", "jsonls", "rust_analyzer", "gopls", "cmake"
 }
 
 -- git support in nvimtree
