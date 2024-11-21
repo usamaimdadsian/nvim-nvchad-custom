@@ -4,18 +4,11 @@
 ---@type ChadrcConfig
 local M = {}
 
-M.ui = {
+M.base46 = {
   theme = "tokyonight",
   theme_toggle = { "onedark", "one_light" },
   transparency = true,
 
-  hl_override = {
-    Normal = { bg = "NONE" },
-    NormalNC = { bg = "NONE" },
-    SignColumn = { bg = "NONE" },
-    VertSplit = { bg = "NONE" },
-    NonText = { bg = "NONE" },
-  },
 
 	-- hl_override = {
 	-- 	Comment = { italic = true },
