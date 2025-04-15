@@ -268,5 +268,5 @@ return {
         "Piomon",
         "Piodebug",
     },
-  }
+  },
 }
