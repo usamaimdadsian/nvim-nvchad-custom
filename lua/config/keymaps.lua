@@ -5,3 +5,5 @@
 local map = LazyVim.safe_keymap_set
 
 map("i", "kj", "<Esc>", { desc = "Go to normal mode" })
+map("v", "kj", "<Esc>", { desc = "Go to normal mode" })
+map("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })

@@ -1,18 +1,39 @@
 return {
-  { import = "lazyvim.plugins.extras.lang.python" },
-  { import = "lazyvim.plugins.extras.lang.clangd" },
-  { import = "lazyvim.plugins.extras.lang.docker" },
-  { import = "lazyvim.plugins.extras.lang.git" },
-  { import = "lazyvim.plugins.extras.lang.go" },
-  { import = "lazyvim.plugins.extras.lang.json" },
-  { import = "lazyvim.plugins.extras.lang.markdown" },
-  { import = "lazyvim.plugins.extras.lang.php" },
-  { import = "lazyvim.plugins.extras.lang.python" },
-  { import = "lazyvim.plugins.extras.lang.rust" },
-  { import = "lazyvim.plugins.extras.lang.sql" },
-  { import = "lazyvim.plugins.extras.lang.toml" },
-  { import = "lazyvim.plugins.extras.lang.yaml" },
-  { import = "lazyvim.plugins.extras.dap.core" },
-  { import = "lazyvim.plugins.extras.dap.nlua" },
-  { import = "lazyvim.plugins.extras.coding.mini-surround" },
+  {
+    "Weissle/persistent-breakpoints.nvim",
+    event = "BufReadPost", -- load breakpoints when reading files
+    dependencies = { "mfussenegger/nvim-dap" }, -- make sure DAP is installed
+    config = function()
+      require("persistent-breakpoints").setup({
+        load_breakpoints_event = { "BufReadPost" },
+      })
+
+      local opts = { noremap = true, silent = true }
+      local keymap = vim.api.nvim_set_keymap
+
+      keymap("n", "<leader>db", "<cmd>lua require('persistent-breakpoints.api').toggle_breakpoint()<CR>", opts)
+      keymap("n", "<leader>dB", "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<CR>", opts)
+      -- keymap("n", "<leader>dl", "<cmd>lua require('persistent-breakpoints.api').set_log_point()<CR>", opts)
+      -- keymap("n", "<leader>dC", "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<CR>", opts)
+    end,
+  },
+  {
+    "mfussenegger/nvim-dap",
+    keys = {
+      {
+        "<leader>do",
+        function()
+          require("dap").step_over()
+        end,
+        desc = "Step Over",
+      },
+      {
+        "<leader>dO",
+        function()
+          require("dap").step_out()
+        end,
+        desc = "Step Out",
+      },
+    },
+  },
 }
