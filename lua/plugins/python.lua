@@ -8,9 +8,18 @@ return {
       servers = {
         basedpyright = {
           settings = {
+            -- pyright = {
+            --   disableOrganizeImports = true,
+            -- },
             basedpyright = {
               typeCheckingMode = "basic",
               reportMissingSuperCall = false,
+              reportUnknownMemberType = false,
+              reportUnknownParameterType = false,
+              reportUnknownVariableType = false,
+              reportUnknownArgumentType = false,
+              reportUnknownLambdaType = false,
+              reportUnknownReturnType = false,
             },
           },
         },
