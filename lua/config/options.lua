@@ -10,3 +10,5 @@ vim.filetype.add({
     gohtml = "html", -- or "gotmpl" if you installed a template parser
   },
 })
+
+vim.opt.clipboard = "unnamedplus"

@@ -1,5 +1,9 @@
 return {
   {
+    "nvim-neotest/neotest",
+    dependencies = { "nvim-neotest/nvim-nio" },
+  },
+  {
     "Weissle/persistent-breakpoints.nvim",
     event = "BufReadPost", -- load breakpoints when reading files
     dependencies = { "mfussenegger/nvim-dap" }, -- make sure DAP is installed
