@@ -40,6 +40,9 @@ return {
       },
     },
   },
+  {
+    "folke/zen-mode.nvim",
+  },
   -- {
   --   "m4xshen/hardtime.nvim",
   --   lazy = false,
