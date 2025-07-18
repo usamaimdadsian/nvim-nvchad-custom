@@ -26,4 +26,14 @@ return {
       }
     end,
   },
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = function(_, opts)
+      local function project_name()
+        local cwd = vim.fn.getcwd()
+        return " " .. vim.fn.fnamemodify(cwd, ":t")
+      end
+      opts.sections.lualine_z = { project_name }
+    end,
+  },
 }
