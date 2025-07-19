@@ -18,7 +18,7 @@ local function handle_continue()
   "configurations": [
     {
       "name": "Run Project",
-      "type": "pwa-node/debugpy",
+      "type": "pwa-node/debugpy/lldb",
       "request": "launch",
       "program": "${workspaceFolder}/",
       "cwd": "${workspaceFolder}",
