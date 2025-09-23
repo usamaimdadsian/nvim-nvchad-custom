@@ -6,6 +6,7 @@ local map = LazyVim.safe_keymap_set
 
 map("i", "kj", "<Esc>", { desc = "Go to normal mode" })
 map("v", "kj", "<Esc>", { desc = "Go to normal mode" })
+map("t", "jk", [[<C-\><C-n>]], { desc = "Go to normal mode" })
 map("n", "<leader>bn", ":enew<CR>", { desc = "New buffer" })
 map("n", "<leader>z", ":ZenMode<CR>", { desc = "toggle zen mode (zoom in current window/buffer)" })
 map("n", "<leader>dU", function()
