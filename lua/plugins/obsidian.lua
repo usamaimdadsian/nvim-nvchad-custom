@@ -1,5 +1,9 @@
 return {
   {
+    "nvim-treesitter/nvim-treesitter",
+    opts = { ensure_installed = { "latex" } },
+  },
+  {
     "epwalsh/obsidian.nvim",
     version = "*", -- recommended, use latest release instead of latest commit
     -- lazy = true,
@@ -13,6 +17,7 @@ return {
       "nvim-lua/plenary.nvim",
     },
     opts = {
+      ui = { enable = false },
       picker = { name = "snacks.picker" },
       workspaces = {
         {
