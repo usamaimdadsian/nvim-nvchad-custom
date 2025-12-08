@@ -1,5 +1,11 @@
 return {
   {
+    "folke/snacks.nvim",
+    opts = {
+      image = { enabled = true },
+    },
+  },
+  {
     "nvim-neotest/neotest",
     dependencies = { "nvim-neotest/nvim-nio" },
   },
@@ -34,26 +40,5 @@ return {
     config = function()
       require("devcontainer").setup({})
     end,
-  },
-  {
-    "epwalsh/obsidian.nvim",
-    version = "*", -- recommended, use latest release instead of latest commit
-    -- lazy = true,
-    -- ft = "markdown",
-    event = {
-      "BufReadPre " .. vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/*.md",
-      "BufNewFile " .. vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/*.md",
-    },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
-    opts = {
-      workspaces = {
-        {
-          name = "personal",
-          path = vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/",
-        },
-      },
-    },
   },
 }
