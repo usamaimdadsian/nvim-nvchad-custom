@@ -21,12 +21,12 @@ return {
       -- delete(functi*on calls)     dsf             function calls
     end,
   },
-  -- {
-  --   "m4xshen/hardtime.nvim",
-  --   lazy = false,
-  --   dependencies = { "MunifTanjim/nui.nvim" },
-  --   opts = {},
-  -- },
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    dependencies = { "MunifTanjim/nui.nvim" },
+    opts = {},
+  },
   {
     "https://codeberg.org/esensar/nvim-dev-container",
     dependencies = "nvim-treesitter/nvim-treesitter",
@@ -34,5 +34,26 @@ return {
     config = function()
       require("devcontainer").setup({})
     end,
+  },
+  {
+    "epwalsh/obsidian.nvim",
+    version = "*", -- recommended, use latest release instead of latest commit
+    -- lazy = true,
+    -- ft = "markdown",
+    event = {
+      "BufReadPre " .. vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/*.md",
+      "BufNewFile " .. vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/*.md",
+    },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    opts = {
+      workspaces = {
+        {
+          name = "personal",
+          path = vim.fn.expand("~") .. "/linux/obsidian/obsidian-docs/",
+        },
+      },
+    },
   },
 }
