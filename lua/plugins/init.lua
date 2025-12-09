@@ -1,5 +1,9 @@
 return {
   {
+    "mg979/vim-visual-multi",
+    event = "VeryLazy",
+  },
+  {
     "folke/snacks.nvim",
     opts = {
       image = { enabled = true },
