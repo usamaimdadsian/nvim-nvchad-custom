@@ -89,6 +89,7 @@ return {
         },
         ignore_blank_lines = true, -- ignore blank lines when sending visual select lines
       })
+      -- This toggles and focuses in one command
       vim.keymap.set("n", "<space>rz", function()
         local ft = vim.bo.filetype
         local repl_win = nil
