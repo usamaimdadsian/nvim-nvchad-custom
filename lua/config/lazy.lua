@@ -39,6 +39,8 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.dap.nlua" },
     -- { import = "lazyvim.plugins.extras.ai.copilot-native" },
     -- { import = "lazyvim.plugins.extras.ai.copilot" },
+    -- { import = "lazyvim.plugins.extras.ai.avante" },
+    -- { import = "lazyvim.plugins.extras.ai.codeium" },
 
     -- import/override with your plugins
     { import = "plugins" },

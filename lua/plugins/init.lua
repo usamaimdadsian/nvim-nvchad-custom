@@ -48,4 +48,41 @@ return {
       require("devcontainer").setup({})
     end,
   },
+
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    keys = {
+      -- swap behavior
+      { "<leader>e", "<leader>fE", desc = "Explorer NeoTree (Root Dir)", remap = true },
+      { "<leader>E", "<leader>fe", desc = "Explorer NeoTree (cwd)", remap = true },
+    },
+  },
+  {
+    "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+    config = true,
+    keys = {
+      { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView Open" },
+      { "<leader>gD", "<cmd>DiffviewClose<cr>", desc = "DiffView Close" },
+    },
+  },
+  -- {
+  --   "yetone/avante.nvim",
+  --   opts = function(_, opts)
+  --     -- Change only the provider
+  --     opts.provider = "ollama"
+  --
+  --     opts.max_tokens = 256
+  --     opts.debounce = 400
+  --     opts.context_lines = 80
+  --
+  --     -- Add / override only ollama config
+  --     opts.providers = opts.providers or {}
+  --     opts.providers.ollama = {
+  --       model = "deepseek-coder:1.3b",
+  --       is_env_set = require("avante.providers.ollama").check_endpoint_alive,
+  --     }
+  --   end,
+  -- },
+  --
 }
