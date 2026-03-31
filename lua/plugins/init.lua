@@ -133,10 +133,84 @@ return {
   {
     "sindrets/diffview.nvim",
     cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
-    config = true,
+    config = function()
+      require("diffview").setup({})
+
+      local function git_lines(args)
+        local cmd = { "git", "-C", vim.fn.getcwd() }
+        vim.list_extend(cmd, args)
+
+        local result = vim.system(cmd, { text = true }):wait()
+        if result.code ~= 0 then
+          local err = vim.trim(result.stderr or result.stdout or "Git command failed")
+          return nil, err
+        end
+
+        local output = vim.trim(result.stdout or "")
+        if output == "" then
+          return {}, nil
+        end
+
+        return vim.split(output, "\n", { trimempty = true }), nil
+      end
+
+      local function select_commit(prompt, commits, on_choice)
+        vim.ui.select(commits, {
+          prompt = prompt,
+          format_item = function(item)
+            return item.display
+          end,
+        }, on_choice)
+      end
+
+      local function compare_commits()
+        local lines, err = git_lines({ "log", "--oneline", "--decorate", "-n", "100" })
+        if not lines then
+          vim.notify(err, vim.log.levels.ERROR)
+          return
+        end
+
+        local commits = {}
+        for _, line in ipairs(lines) do
+          local hash = line:match("^(%w+)")
+          if hash then
+            table.insert(commits, { hash = hash, display = line })
+          end
+        end
+
+        if #commits == 0 then
+          vim.notify("No commits found", vim.log.levels.WARN)
+          return
+        end
+
+        select_commit("Base commit", commits, function(base)
+          if not base then
+            return
+          end
+
+          select_commit("Target commit", commits, function(target)
+            if not target then
+              return
+            end
+
+            if base.hash == target.hash then
+              vim.notify("Choose two different commits", vim.log.levels.WARN)
+              return
+            end
+
+            vim.cmd("DiffviewOpen " .. base.hash .. ".." .. target.hash)
+          end)
+        end)
+      end
+
+      vim.api.nvim_create_user_command("DiffviewCompareCommits", compare_commits, {
+        desc = "Compare two commits in Diffview",
+      })
+    end,
     keys = {
       { "<leader>gc", "<cmd>DiffviewOpen<cr>", desc = "DiffView Open" },
       { "<leader>gC", "<cmd>DiffviewClose<cr>", desc = "DiffView Close" },
+      { "<leader>ge", "<cmd>DiffviewCompareCommits<cr>", desc = "DiffView Compare Commits" },
     },
   },
   -- {
