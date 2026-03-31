@@ -2,9 +2,16 @@ local state = {
   buf = nil,
   win = nil,
   job = nil,
+  agent = nil,
 }
 
 local M = {}
+
+local agents = {
+  { label = "Codex", cmd = "codex" },
+  { label = "Claude Code", cmd = "claude" },
+  { label = "OpenCode", cmd = "opencode" },
+}
 
 local function is_valid_buf(buf)
   return buf and vim.api.nvim_buf_is_valid(buf)
@@ -36,7 +43,7 @@ local function calc_float()
     row = math.floor((vim.o.lines - height) / 2),
     style = "minimal",
     border = "rounded",
-    title = " Codex CLI ",
+    title = " Agent CLI ",
     title_pos = "center",
   }
 end
@@ -46,18 +53,42 @@ local function open_window(buf)
   vim.wo[state.win].winblend = 0
 end
 
-local function start_codex()
-  if vim.fn.executable("codex") ~= 1 then
-    vim.notify("`codex` command not found in PATH", vim.log.levels.ERROR)
+local function select_agent(callback)
+  if state.agent then
+    callback(state.agent)
+    return
+  end
+
+  vim.ui.select(agents, {
+    prompt = "Select agent",
+    format_item = function(item)
+      return item.label
+    end,
+  }, function(choice)
+    if not choice then
+      return
+    end
+    state.agent = choice
+    callback(choice)
+  end)
+end
+
+local function start_agent()
+  if not state.agent then
+    return false
+  end
+
+  if vim.fn.executable(state.agent.cmd) ~= 1 then
+    vim.notify("`" .. state.agent.cmd .. "` command not found in PATH", vim.log.levels.ERROR)
     return false
   end
 
   state.buf = vim.api.nvim_create_buf(false, true)
   vim.bo[state.buf].bufhidden = "hide"
-  vim.bo[state.buf].filetype = "codex"
+  vim.bo[state.buf].filetype = "agent"
 
   open_window(state.buf)
-  state.job = vim.fn.termopen({ "codex" }, {
+  state.job = vim.fn.termopen({ state.agent.cmd }, {
     on_exit = function()
       state.job = nil
     end,
@@ -92,7 +123,7 @@ local function ensure_terminal()
     return state.buf, state.job
   end
 
-  if not start_codex() then
+  if not start_agent() then
     return nil, nil
   end
 
@@ -106,13 +137,37 @@ function M.toggle()
     return
   end
 
-  ensure_terminal()
+  select_agent(function()
+    ensure_terminal()
+  end)
+end
+
+function M.select()
+  vim.ui.select(agents, {
+    prompt = "Select agent",
+    format_item = function(item)
+      return item.label
+    end,
+  }, function(choice)
+    if not choice then
+      return
+    end
+    state.agent = choice
+
+    if is_valid_win(state.win) then
+      vim.api.nvim_win_close(state.win, true)
+      state.win = nil
+    end
+
+    state.buf = nil
+    state.job = nil
+  end)
 end
 
 return {
   {
     dir = vim.fn.stdpath("config"),
-    name = "codex-cli-local",
+    name = "agent-cli-local",
     event = "VeryLazy",
     keys = {
       {
@@ -120,11 +175,12 @@ return {
         function()
           M.toggle()
         end,
-        desc = "Codex Toggle",
+        desc = "Agent Toggle",
       },
     },
     config = function()
-      vim.api.nvim_create_user_command("CodexToggle", M.toggle, {})
+      vim.api.nvim_create_user_command("AgentToggle", M.toggle, {})
+      vim.api.nvim_create_user_command("AgentSelect", M.select, {})
     end,
   },
 }
