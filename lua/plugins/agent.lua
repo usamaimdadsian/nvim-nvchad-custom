@@ -177,6 +177,13 @@ return {
         end,
         desc = "Agent Toggle",
       },
+      {
+        "<leader>ac",
+        function()
+          M.select()
+        end,
+        desc = "Agent Change",
+      },
     },
     config = function()
       vim.api.nvim_create_user_command("AgentToggle", M.toggle, {})
