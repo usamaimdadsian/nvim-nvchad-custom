@@ -116,7 +116,7 @@ return {
     event = "VeryLazy",
     keys = {
       {
-        "<leader>ct",
+        "<leader>at",
         function()
           M.toggle()
         end,
