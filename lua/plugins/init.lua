@@ -45,7 +45,7 @@ return {
     dependencies = "nvim-treesitter/nvim-treesitter",
     event = "VeryLazy",
     keys = {
-      { "<leader>vdl", "<cmd>DevcontainerLogsTail<cr>", desc = "Devcontainer Log Tail" },
+      { "<leader>vdl", "<cmd>DevcontainerDockerBuildLogs<cr>", desc = "Devcontainer Build Output" },
       { "<leader>vdb", "<cmd>DevcontainerDockerBuild<cr>", desc = "Devcontainer Docker Build" },
       { "<leader>vda", "<cmd>DevcontainerAttach<cr>", desc = "Devcontainer Attach" },
       { "<leader>vds", "<cmd>DevcontainerStop<cr>", desc = "Devcontainer Stop" },
@@ -53,8 +53,36 @@ return {
     config = function()
       require("devcontainer").setup({})
 
-      local function open_floating_terminal(cmd, title)
-        local buf = vim.api.nvim_create_buf(false, true)
+      local build_state = {
+        buf = nil,
+        win = nil,
+      }
+
+      local function is_valid_buf(buf)
+        return buf and vim.api.nvim_buf_is_valid(buf)
+      end
+
+      local function is_valid_win(win)
+        return win and vim.api.nvim_win_is_valid(win)
+      end
+
+      local function resolve_devcontainer_data()
+        local ok_parse, parse = pcall(require, "devcontainer.config_file.parse")
+        if not ok_parse then
+          vim.notify("Unable to load devcontainer parser", vim.log.levels.ERROR)
+          return nil
+        end
+
+        local ok_data, data = pcall(parse.parse_nearest_devcontainer_config)
+        if not ok_data then
+          vim.notify(data, vim.log.levels.ERROR)
+          return nil
+        end
+
+        return parse.fill_defaults(data)
+      end
+
+      local function open_floating_terminal(buf, title)
         local width = math.floor(vim.o.columns * 0.9)
         local height = math.floor(vim.o.lines * 0.85)
 
@@ -78,31 +106,48 @@ return {
 
         vim.keymap.set({ "n", "t" }, "<Esc>", close, { buffer = buf, silent = true, desc = "Close floating terminal" })
         vim.keymap.set({ "n", "t" }, "q", close, { buffer = buf, silent = true, desc = "Close floating terminal" })
+        return win
+      end
+
+      local function create_floating_terminal(cmd, title)
+        local buf = vim.api.nvim_create_buf(false, true)
+        local win = open_floating_terminal(buf, title)
 
         vim.fn.termopen(cmd)
         vim.cmd.startinsert()
+        return buf, win
       end
 
-      vim.api.nvim_create_user_command("DevcontainerLogsTail", function()
-        local log_path = vim.fn.stdpath("cache") .. "/devcontainer.log"
-        open_floating_terminal({ "tail", "-f", log_path }, " Devcontainer Logs ")
-      end, { desc = "Tail devcontainer logs in a floating terminal" })
+      local function show_last_build_output()
+        if is_valid_win(build_state.win) then
+          vim.api.nvim_set_current_win(build_state.win)
+          return
+        end
+
+        if not is_valid_buf(build_state.buf) then
+          vim.notify("No docker build output available yet", vim.log.levels.WARN)
+          return
+        end
+
+        build_state.win = open_floating_terminal(build_state.buf, " Devcontainer Docker Build ")
+        vim.cmd.startinsert()
+      end
+
+      vim.api.nvim_create_user_command("DevcontainerDockerBuildLogs", show_last_build_output, {
+        desc = "Show last docker build output in a floating terminal",
+      })
 
       vim.api.nvim_create_user_command("DevcontainerDockerBuild", function()
-        local ok_parse, parse = pcall(require, "devcontainer.config_file.parse")
         local ok_config, devcontainer_config = pcall(require, "devcontainer.config")
-        if not ok_parse or not ok_config then
+        if not ok_config then
           vim.notify("Unable to load devcontainer internals", vim.log.levels.ERROR)
           return
         end
 
-        local ok_data, data = pcall(parse.parse_nearest_devcontainer_config)
-        if not ok_data then
-          vim.notify(data, vim.log.levels.ERROR)
+        local data = resolve_devcontainer_data()
+        if not data then
           return
         end
-
-        data = parse.fill_defaults(data)
 
         if not data.build or not data.build.dockerfile then
           vim.notify("Nearest devcontainer does not use a Dockerfile build", vim.log.levels.ERROR)
@@ -114,11 +159,57 @@ return {
           runtime = "docker"
         end
 
-        open_floating_terminal(
+        build_state.buf, build_state.win = create_floating_terminal(
           { runtime, "build", "-f", data.build.dockerfile, data.build.context },
           " Devcontainer Docker Build "
         )
       end, { desc = "Run raw docker build for the nearest devcontainer in a floating terminal" })
+
+      vim.api.nvim_del_user_command("DevcontainerAttach")
+      vim.api.nvim_create_user_command("DevcontainerAttach", function()
+        local data = resolve_devcontainer_data()
+        if not data then
+          return
+        end
+
+        local commands = require("devcontainer.commands")
+        local status = require("devcontainer.status")
+
+        if data.dockerComposeFile then
+          commands.attach_auto("devcontainer", "nvim")
+          return
+        end
+
+        if data.build and data.build.dockerfile then
+          local image = status.find_image({ source_dockerfile = data.build.dockerfile })
+          local container = image and status.find_container({ image_id = image.image_id }) or nil
+
+          if container then
+            commands.attach_auto("devcontainer", "nvim")
+          else
+            vim.notify("No tracked devcontainer is running. Starting and attaching...", vim.log.levels.INFO)
+            commands.start_auto(nil, true)
+          end
+          return
+        end
+
+        if data.image then
+          local container = status.find_container({ image_id = data.image })
+
+          if container then
+            commands.attach_auto("devcontainer", "nvim")
+          else
+            vim.notify("No tracked devcontainer is running. Starting and attaching...", vim.log.levels.INFO)
+            commands.start_auto(nil, true)
+          end
+          return
+        end
+
+        vim.notify("No supported devcontainer target found", vim.log.levels.ERROR)
+      end, {
+        nargs = 0,
+        desc = "Attach to a running devcontainer or start and attach if needed",
+      })
     end,
   },
 
