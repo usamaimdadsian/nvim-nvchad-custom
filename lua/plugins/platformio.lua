@@ -1,4 +1,5 @@
 local state = {
+  compiledb = {},
   monitor = {
     buf = nil,
     win = nil,
@@ -57,8 +58,8 @@ local function open_float(buf, title)
   return win
 end
 
-local function find_platformio_root()
-  local start = vim.api.nvim_buf_get_name(0)
+local function find_platformio_root(start)
+  start = start or vim.api.nvim_buf_get_name(0)
   if start == "" then
     start = vim.fn.getcwd()
   end
@@ -166,15 +167,23 @@ local function open_command(cmd, title, root, reuse)
   end
 end
 
-local function refresh_compiledb(root, cli, env)
+local function refresh_compiledb(root, cli, env, opts)
+  opts = opts or {}
+  if state.compiledb[root] == "running" then
+    return
+  end
+
+  state.compiledb[root] = "running"
   vim.system({ cli, "run", "-e", env, "-t", "compiledb" }, { cwd = root }, function(result)
     vim.schedule(function()
+      state.compiledb[root] = nil
       if result.code ~= 0 then
         return
       end
 
       local compile_commands = root .. "/compile_commands.json"
       if vim.uv.fs_stat(compile_commands) then
+        state.compiledb[root] = "ready"
         for _, client in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
           vim.lsp.stop_client(client.id, true)
         end
@@ -182,10 +191,41 @@ local function refresh_compiledb(root, cli, env)
         if ft == "c" or ft == "cpp" or ft == "objc" or ft == "objcpp" then
           vim.cmd("LspStart clangd")
         end
-        vim.notify("PlatformIO compile database refreshed", vim.log.levels.INFO)
+        if not opts.silent then
+          vim.notify("PlatformIO compile database refreshed", vim.log.levels.INFO)
+        end
       end
     end)
   end)
+end
+
+local function ensure_compiledb_for_buffer(buf)
+  local name = vim.api.nvim_buf_get_name(buf)
+  if name == "" then
+    return
+  end
+
+  local root, config_path = find_platformio_root(name)
+  if not root or not config_path then
+    return
+  end
+
+  if vim.uv.fs_stat(root .. "/compile_commands.json") then
+    state.compiledb[root] = "ready"
+    return
+  end
+
+  local cli = platformio_cli()
+  if not cli then
+    return
+  end
+
+  local envs = get_envs(config_path)
+  if #envs ~= 1 then
+    return
+  end
+
+  refresh_compiledb(root, cli, envs[1], { silent = true })
 end
 
 local function run_command(args, title)
@@ -249,6 +289,16 @@ return {
       },
     },
     config = function()
+      local augroup = vim.api.nvim_create_augroup("platformio_local", { clear = true })
+
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+        group = augroup,
+        pattern = { "*.c", "*.cpp", "*.h", "*.hpp", "*.ino" },
+        callback = function(args)
+          ensure_compiledb_for_buffer(args.buf)
+        end,
+      })
+
       vim.api.nvim_create_user_command("PlatformIOBuild", function()
         run_command({}, " PlatformIO Build ")
       end, { desc = "Build the nearest PlatformIO project" })
