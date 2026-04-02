@@ -166,6 +166,28 @@ local function open_command(cmd, title, root, reuse)
   end
 end
 
+local function refresh_compiledb(root, cli, env)
+  vim.system({ cli, "run", "-e", env, "-t", "compiledb" }, { cwd = root }, function(result)
+    vim.schedule(function()
+      if result.code ~= 0 then
+        return
+      end
+
+      local compile_commands = root .. "/compile_commands.json"
+      if vim.uv.fs_stat(compile_commands) then
+        for _, client in ipairs(vim.lsp.get_clients({ name = "clangd" })) do
+          vim.lsp.stop_client(client.id, true)
+        end
+        local ft = vim.bo.filetype
+        if ft == "c" or ft == "cpp" or ft == "objc" or ft == "objcpp" then
+          vim.cmd("LspStart clangd")
+        end
+        vim.notify("PlatformIO compile database refreshed", vim.log.levels.INFO)
+      end
+    end)
+  end)
+end
+
 local function run_command(args, title)
   with_project(function(root, config_path, cli)
     select_env(config_path, function(env)
@@ -176,6 +198,7 @@ local function run_command(args, title)
       local cmd = { cli, "run", "-e", env }
       vim.list_extend(cmd, args)
       open_command(cmd, title .. " [" .. env .. "] ", root)
+      refresh_compiledb(root, cli, env)
     end)
   end)
 end
