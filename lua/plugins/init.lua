@@ -52,6 +52,30 @@ return {
     },
     config = function()
       require("devcontainer").setup({})
+      do
+        local parse = require("devcontainer.config_file.parse")
+        if not parse._supports_devcontainer_id_substitution then
+          local original_fill_defaults = parse.fill_defaults
+
+          parse.fill_defaults = function(config_file)
+            local data = original_fill_defaults(config_file)
+
+            if data.mounts and data.metadata and data.metadata.file_path then
+              local devcontainer_id = vim.fn.sha256(data.metadata.file_path):sub(1, 12)
+
+              for i, mount in ipairs(data.mounts) do
+                if type(mount) == "string" then
+                  data.mounts[i] = mount:gsub("${devcontainerId}", devcontainer_id)
+                end
+              end
+            end
+
+            return data
+          end
+
+          parse._supports_devcontainer_id_substitution = true
+        end
+      end
 
       local build_state = {
         buf = nil,
@@ -79,7 +103,8 @@ return {
           return nil
         end
 
-        return parse.fill_defaults(data)
+        data = parse.fill_defaults(data)
+        return data
       end
 
       local function open_floating_terminal(buf, title)
