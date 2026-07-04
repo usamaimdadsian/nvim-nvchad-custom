@@ -9,7 +9,13 @@ local M = {}
 
 local agents = {
   { label = "Codex", cmd = "codex" },
-  { label = "Claude Code", cmd = "claude" },
+  {
+    label = "Claude Code",
+    cmd = "claude",
+    env = {
+      CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1",
+    },
+  },
   { label = "OpenCode", cmd = "opencode" },
 }
 
@@ -89,6 +95,7 @@ local function start_agent()
 
   open_window(state.buf)
   state.job = vim.fn.termopen({ state.agent.cmd }, {
+    env = state.agent.env,
     on_exit = function()
       state.job = nil
     end,
