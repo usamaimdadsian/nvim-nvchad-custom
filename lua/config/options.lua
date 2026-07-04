@@ -4,6 +4,7 @@
 
 vim.g.lazyvim_python_lsp = "basedpyright"
 vim.g.equalalways = false
+vim.g.root_spec = { "cwd", "lsp", { ".git", "lua" } }
 
 vim.filetype.add({
   extension = {
