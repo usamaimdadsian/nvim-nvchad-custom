@@ -13,3 +13,5 @@ vim.filetype.add({
 })
 
 vim.opt.clipboard = "unnamedplus"
+vim.env.PUPPETEER_EXECUTABLE_PATH = "/usr/bin/chromium"
+vim.env.SNACKS_GHOSTTY = "true"

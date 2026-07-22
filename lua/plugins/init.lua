@@ -1,5 +1,13 @@
 return {
   {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      code = {
+        disable = { "mermaid" },
+      },
+    },
+  },
+  {
     "mg979/vim-visual-multi",
     event = "VeryLazy",
   },
