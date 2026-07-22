@@ -17,6 +17,8 @@ local function obsidian_workspaces()
   return {}
 end
 
+local workspaces = obsidian_workspaces()
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -24,6 +26,7 @@ return {
   },
   {
     "epwalsh/obsidian.nvim",
+    enabled = #workspaces > 0,
     version = "*", -- recommended, use latest release instead of latest commit
     -- lazy = true,
     ft = "markdown",
@@ -38,7 +41,7 @@ return {
     opts = {
       ui = { enable = false },
       picker = { name = "snacks.picker" },
-      workspaces = obsidian_workspaces(),
+      workspaces = workspaces,
       before_save = function(note)
         local client = require("obsidian").get_client()
         local rel_path = note.path:sub(#client.dir + 2)
