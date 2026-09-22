@@ -67,6 +67,60 @@ local function find_platformio_root(start)
   return vim.fs.dirname(found), found
 end
 
+-- Embassy / esp-hal projects: a Cargo.toml whose cargo runner (or espflash.toml)
+-- uses espflash.
+local function find_embassy_root(start)
+  start = start or vim.api.nvim_buf_get_name(0)
+  if start == "" then
+    start = vim.fn.getcwd()
+  end
+
+  local found = vim.fs.find("Cargo.toml", {
+    upward = true,
+    path = vim.fs.dirname(start),
+    stop = vim.loop.os_homedir(),
+  })[1]
+  if not found then
+    return nil
+  end
+
+  local root = vim.fs.dirname(found)
+  if vim.uv.fs_stat(root .. "/espflash.toml") then
+    return root
+  end
+  local config = root .. "/.cargo/config.toml"
+  if vim.uv.fs_stat(config) and table.concat(vim.fn.readfile(config), "\n"):find("espflash") then
+    return root
+  end
+  return nil
+end
+
+local function first_match(path, pattern)
+  if not vim.uv.fs_stat(path) then
+    return nil
+  end
+  for _, line in ipairs(vim.fn.readfile(path)) do
+    local value = line:match(pattern)
+    if value then
+      return value
+    end
+  end
+  return nil
+end
+
+local function embassy_project(root)
+  local triple = first_match(root .. "/.cargo/config.toml", '^%s*target%s*=%s*"([^"]+)"')
+  local name = first_match(root .. "/Cargo.toml", '^%s*name%s*=%s*"([^"]+)"')
+  local elf = (triple and name) and (root .. "/target/" .. triple .. "/release/" .. name) or nil
+  return { kind = "embassy", root = root, elf = elf }
+end
+
+-- Runs a shell command with the Xtensa toolchain (espup) and ~/.cargo/bin on PATH.
+local function embassy_cmd(cmd)
+  local setup = '[ -f "$HOME/export-esp.sh" ] && . "$HOME/export-esp.sh"; export PATH="$HOME/.cargo/bin:$PATH"; '
+  return { "sh", "-c", setup .. cmd }
+end
+
 local function platformio_cli()
   if vim.fn.executable("pio") == 1 then
     return "pio"
@@ -93,8 +147,16 @@ end
 
 local function with_project(callback)
   local root, config_path = find_platformio_root()
+  local embassy_root = find_embassy_root()
+
+  -- The nearest project wins (e.g. a PlatformIO project nested in a Cargo repo).
+  if embassy_root and (not root or #embassy_root > #root) then
+    callback(embassy_project(embassy_root))
+    return
+  end
+
   if not root then
-    vim.notify("No platformio.ini found in current project", vim.log.levels.ERROR)
+    vim.notify("No platformio.ini or espflash Cargo project found", vim.log.levels.ERROR)
     return
   end
 
@@ -104,7 +166,7 @@ local function with_project(callback)
     return
   end
 
-  callback(root, config_path, cli)
+  callback({ kind = "platformio", root = root, config_path = config_path, cli = cli })
 end
 
 local function select_env(config_path, callback)
@@ -441,8 +503,32 @@ local function ensure_compiledb_for_buffer(buf)
   refresh_compiledb(root, cli, envs[1], { silent = true })
 end
 
-local function run_command(args, title)
-  with_project(function(root, config_path, cli)
+local function run_embassy(project, action)
+  if action == "build" then
+    open_command(embassy_cmd("cargo build --release"), " Cargo Build [release] ", project.root)
+    return
+  end
+
+  if not project.elf then
+    vim.notify("Could not work out the firmware ELF path", vim.log.levels.ERROR)
+    return
+  end
+  -- espflash can't open the port while our monitor holds it.
+  monitor_close(true)
+  local cmd = "cargo build --release && espflash flash " .. vim.fn.shellescape(project.elf)
+  open_command(embassy_cmd(cmd), " espflash Upload [release] ", project.root)
+end
+
+local function run_command(action)
+  with_project(function(project)
+    if project.kind == "embassy" then
+      run_embassy(project, action)
+      return
+    end
+
+    local root, config_path, cli = project.root, project.config_path, project.cli
+    local args = action == "upload" and { "-t", "upload" } or {}
+    local title = action == "upload" and " PlatformIO Upload " or " PlatformIO Build "
     select_env(config_path, function(env)
       if not env then
         return
@@ -457,11 +543,29 @@ local function run_command(args, title)
 end
 
 local function serial_monitor()
-  with_project(function(root, config_path, cli)
-    select_env(config_path, function(env)
+  with_project(function(project)
+    local root = project.root
+    local select, monitor_cmd
+    if project.kind == "embassy" then
+      state.monitor.title = " espflash Serial Monitor "
+      select = function(callback)
+        callback("release")
+      end
+      local elf = project.elf and vim.uv.fs_stat(project.elf) and (" --elf " .. vim.fn.shellescape(project.elf)) or ""
+      -- --elf lets espflash decode panic backtraces into source locations.
+      monitor_cmd = embassy_cmd("espflash monitor" .. elf)
+    else
+      state.monitor.title = " PlatformIO Serial Monitor "
+      select = function(callback)
+        select_env(project.config_path, callback)
+      end
+    end
+
+    select(function(env)
       if not env then
         return
       end
+      monitor_cmd = monitor_cmd or { project.cli, "device", "monitor", "-e", env }
 
       if is_valid_win(state.monitor.win) or is_valid_win(state.monitor.input_win) then
         monitor_close(false)
@@ -489,7 +593,7 @@ local function serial_monitor()
 
       open_monitor_windows()
       vim.api.nvim_set_current_win(state.monitor.win)
-      state.monitor.job = vim.fn.termopen({ cli, "device", "monitor", "-e", env }, {
+      state.monitor.job = vim.fn.termopen(monitor_cmd, {
         cwd = root,
         on_exit = function()
           state.monitor.job = nil
@@ -517,23 +621,23 @@ return {
       {
         "<leader>hb",
         function()
-          run_command({}, " PlatformIO Build ")
+          run_command("build")
         end,
-        desc = "PlatformIO Build",
+        desc = "Build (PlatformIO / Embassy)",
       },
       {
         "<leader>hu",
         function()
-          run_command({ "-t", "upload" }, " PlatformIO Upload ")
+          run_command("upload")
         end,
-        desc = "PlatformIO Upload",
+        desc = "Upload (PlatformIO / Embassy)",
       },
       {
         "<leader>hm",
         function()
           serial_monitor()
         end,
-        desc = "PlatformIO Monitor",
+        desc = "Serial Monitor (PlatformIO / Embassy)",
       },
     },
     config = function()
@@ -548,12 +652,12 @@ return {
       })
 
       vim.api.nvim_create_user_command("PlatformIOBuild", function()
-        run_command({}, " PlatformIO Build ")
-      end, { desc = "Build the nearest PlatformIO project" })
+        run_command("build")
+      end, { desc = "Build the nearest PlatformIO / Embassy project" })
 
       vim.api.nvim_create_user_command("PlatformIOUpload", function()
-        run_command({ "-t", "upload" }, " PlatformIO Upload ")
-      end, { desc = "Upload the nearest PlatformIO project" })
+        run_command("upload")
+      end, { desc = "Upload the nearest PlatformIO / Embassy project" })
 
       vim.api.nvim_create_user_command("PlatformIOMonitor", function()
         serial_monitor()
