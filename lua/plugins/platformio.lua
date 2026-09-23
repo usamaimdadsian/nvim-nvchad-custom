@@ -508,6 +508,11 @@ local function run_embassy(project, action)
     open_command(embassy_cmd("cargo build --release"), " Cargo Build [release] ", project.root)
     return
   end
+  if action == "erase" then
+    monitor_close(true)
+    open_command(embassy_cmd("espflash erase-flash"), " espflash Erase Flash ", project.root)
+    return
+  end
 
   if not project.elf then
     vim.notify("Could not work out the firmware ELF path", vim.log.levels.ERROR)
@@ -527,8 +532,9 @@ local function run_command(action)
     end
 
     local root, config_path, cli = project.root, project.config_path, project.cli
-    local args = action == "upload" and { "-t", "upload" } or {}
-    local title = action == "upload" and " PlatformIO Upload " or " PlatformIO Build "
+    local args = ({ upload = { "-t", "upload" }, erase = { "-t", "erase" } })[action] or {}
+    local title = ({ upload = " PlatformIO Upload ", erase = " PlatformIO Erase Flash " })[action]
+      or " PlatformIO Build "
     select_env(config_path, function(env)
       if not env then
         return
@@ -545,7 +551,7 @@ end
 local function serial_monitor()
   with_project(function(project)
     local root = project.root
-    local select, monitor_cmd
+    local select, monitor_cmd, on_stdout
     if project.kind == "embassy" then
       state.monitor.title = " espflash Serial Monitor "
       select = function(callback)
@@ -554,6 +560,21 @@ local function serial_monitor()
       local elf = project.elf and vim.uv.fs_stat(project.elf) and (" --elf " .. vim.fn.shellescape(project.elf)) or ""
       -- --elf lets espflash decode panic backtraces into source locations.
       monitor_cmd = embassy_cmd("espflash monitor" .. elf)
+      -- espflash connects through the ROM bootloader and leaves the chip there, so
+      -- the firmware doesn't run. Once the monitor is up, send its Ctrl+R (reset chip).
+      local reset_sent = false
+      on_stdout = function(job, data)
+        if reset_sent then
+          return
+        end
+        for _, line in ipairs(data) do
+          if line:find("CTRL+C", 1, true) then
+            reset_sent = true
+            vim.fn.chansend(job, "\018")
+            return
+          end
+        end
+      end
     else
       state.monitor.title = " PlatformIO Serial Monitor "
       select = function(callback)
@@ -595,6 +616,7 @@ local function serial_monitor()
       vim.api.nvim_set_current_win(state.monitor.win)
       state.monitor.job = vim.fn.termopen(monitor_cmd, {
         cwd = root,
+        on_stdout = on_stdout,
         on_exit = function()
           state.monitor.job = nil
         end,
@@ -633,6 +655,13 @@ return {
         desc = "Upload (PlatformIO / Embassy)",
       },
       {
+        "<leader>he",
+        function()
+          run_command("erase")
+        end,
+        desc = "Erase Flash (PlatformIO / Embassy)",
+      },
+      {
         "<leader>hm",
         function()
           serial_monitor()
@@ -658,6 +687,10 @@ return {
       vim.api.nvim_create_user_command("PlatformIOUpload", function()
         run_command("upload")
       end, { desc = "Upload the nearest PlatformIO / Embassy project" })
+
+      vim.api.nvim_create_user_command("PlatformIOErase", function()
+        run_command("erase")
+      end, { desc = "Erase the flash of the nearest PlatformIO / Embassy project's board" })
 
       vim.api.nvim_create_user_command("PlatformIOMonitor", function()
         serial_monitor()
