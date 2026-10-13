@@ -8,7 +8,7 @@ local state = {
 local M = {}
 
 local agents = {
-  { label = "Codex", cmd = "codex" },
+  { label = "Codex", cmd = "codex", args = { "--no-alt-screen" } },
   {
     label = "Claude Code",
     cmd = "claude",
@@ -95,7 +95,9 @@ local function start_agent()
   vim.bo[state.buf].filetype = "agent"
 
   open_window(state.buf)
-  state.job = vim.fn.termopen({ state.agent.cmd }, {
+  local command = { state.agent.cmd }
+  vim.list_extend(command, state.agent.args or {})
+  state.job = vim.fn.termopen(command, {
     env = state.agent.env,
     on_exit = function()
       state.job = nil
