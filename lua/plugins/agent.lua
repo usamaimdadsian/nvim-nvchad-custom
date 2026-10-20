@@ -17,7 +17,7 @@ local agents = {
     },
   },
   { label = "OpenCode", cmd = "opencode" },
-  { label = "Pi", cmd = "pi" },
+  { label = "Pi", cmd = "pi", args = { "--tui-mode", "regular" } },
 }
 
 local function is_valid_buf(buf)
